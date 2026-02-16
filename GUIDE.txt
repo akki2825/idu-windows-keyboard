@@ -1,0 +1,38 @@
+Idu Mishmi Keyboard for Windows
+
+INSTALLATION
+------------
+1. Download "Idu Mishmi Keyboard.exe"
+2. Place it anywhere on your computer
+3. Double-click to run
+
+HOW TO USE
+----------
+Open any app where you can type (Notepad, Word, Chrome, etc.)
+and use the Right Alt key (AltGr) for special characters.
+
+DIRECT KEYS:
+
+  Right Alt + E           ->  ə   (schwa)
+  Right Alt + Shift + E   ->  Ə   (capital schwa)
+  Right Alt + R           ->  ə˞  (rhotic schwa)
+  Right Alt + Shift + R   ->  Ə˞  (capital rhotic schwa)
+
+ACCENTED VOWELS (two-step: press the accent key, release, then
+press a vowel — a, e, i, o, or u):
+
+  Right Alt + `  then vowel  ->  grave:   à è ì ò ù
+  Right Alt + '  then vowel  ->  acute:   á é í ó ú
+  Right Alt + ~  then vowel  ->  tilde:   ã ẽ ĩ õ ũ
+  Right Alt + -  then vowel  ->  macron:  ā ē ī ō ū
+
+ACCENTED SCHWAS (accent key, then Right Alt + E or R):
+
+  Right Alt + `  then Right Alt + E  ->  ə̀
+  Right Alt + '  then Right Alt + E  ->  ə́
+  Right Alt + ~  then Right Alt + E  ->  ə̃
+  Right Alt + -  then Right Alt + E  ->  ə̄
+
+  Same with R for rhotic:  ə̀˞  ə́˞  ə̃˞  ə̄˞
+
+Hold Shift for uppercase variants.
