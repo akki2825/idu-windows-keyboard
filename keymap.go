@@ -16,7 +16,9 @@ const (
 // [0] = AltGr (lowercase), [1] = AltGr+Shift (uppercase)
 var directAltGrKeys = map[uint32][2]string{
 	VK_E: {"\u0259", "\u018F"},       // ə, Ə
-	VK_R: {"\u0259\u02DE", "\u018F\u02DE"}, // ə˞, Ə˞
+	VK_R: {"\u0259\u0331", "\u018F\u0331"}, // ə̱, Ə̱
+	VK_O: {"o\u0331", "O\u0331"},             // o̱, O̱
+	VK_U: {"u\u0331", "U\u0331"},             // u̱, U̱
 }
 
 // lookupDirect returns the output for AltGr+key (no dead key).
@@ -102,12 +104,14 @@ var vowelForKey = map[uint32][2]rune{
 // It handles:
 //   - Regular vowel keys → precomposed accented vowel
 //   - AltGr+E (ə/Ə) → schwa with accent
-//   - AltGr+R (ə˞/Ə˞) → rhotic schwa with accent
+//   - AltGr+R (ə̱/Ə̱) → retracted schwa with accent
+//   - AltGr+O (o̱/O̱) → retracted o with accent
+//   - AltGr+U (u̱/U̱) → retracted u with accent
 //
 // Returns (output, handled). If handled is false, the dead key should be
 // cancelled and the keystroke processed normally.
 func resolveDeadKey(accent rune, vkCode uint32, altGr, shift bool) (string, bool) {
-	// AltGr+key: check direct mappings (ə, ə˞)
+	// AltGr+key: check direct mappings (ə, ə̱, o̱, u̱)
 	if altGr {
 		if direct := lookupDirect(vkCode, shift); direct != "" {
 			return applyAccent(accent, direct), true
@@ -132,18 +136,12 @@ func resolveDeadKey(accent rune, vkCode uint32, altGr, shift bool) (string, bool
 	return "", false
 }
 
-// applyAccent inserts a combining accent into a schwa string.
-// For "ə˞" + grave → "ə̀˞" (accent goes after base ə, before ˞).
+// applyAccent appends a combining accent to a string.
+// For "ə̱" + grave → "ə̱̀" (base + U+0331 + accent, canonical order).
 // For "ə" + grave → "ə̀".
 func applyAccent(accent rune, s string) string {
-	runes := []rune(s)
-	if len(runes) == 0 {
+	if len([]rune(s)) == 0 {
 		return string(accent)
 	}
-	// Insert accent after the first rune (the base character)
-	result := make([]rune, 0, len(runes)+1)
-	result = append(result, runes[0])
-	result = append(result, accent)
-	result = append(result, runes[1:]...)
-	return string(result)
+	return s + string(accent)
 }

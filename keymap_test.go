@@ -15,8 +15,12 @@ func TestDirectSchwa(t *testing.T) {
 	}{
 		{"AltGr+E", VK_E, false, "\u0259"},
 		{"AltGr+Shift+E", VK_E, true, "\u018F"},
-		{"AltGr+R", VK_R, false, "\u0259\u02DE"},
-		{"AltGr+Shift+R", VK_R, true, "\u018F\u02DE"},
+		{"AltGr+R", VK_R, false, "\u0259\u0331"},
+		{"AltGr+Shift+R", VK_R, true, "\u018F\u0331"},
+		{"AltGr+O", VK_O, false, "o\u0331"},
+		{"AltGr+Shift+O", VK_O, true, "O\u0331"},
+		{"AltGr+U", VK_U, false, "u\u0331"},
+		{"AltGr+Shift+U", VK_U, true, "U\u0331"},
 	}
 	for _, tc := range tests {
 		got := lookupDirect(tc.vk, tc.shift)
@@ -124,14 +128,22 @@ func TestResolveDeadKeySchwa(t *testing.T) {
 		// accent + Ə (capital)
 		{"grave+Ə", accentGrave, VK_E, true, "\u018F\u0300"},
 		{"tilde+Ə", accentTilde, VK_E, true, "\u018F\u0303"},
-		// accent + ə˞ (rhotic)
-		{"grave+ə˞", accentGrave, VK_R, false, "\u0259\u0300\u02DE"},
-		{"acute+ə˞", accentAcute, VK_R, false, "\u0259\u0301\u02DE"},
-		{"tilde+ə˞", accentTilde, VK_R, false, "\u0259\u0303\u02DE"},
-		{"macron+ə˞", accentMacron, VK_R, false, "\u0259\u0304\u02DE"},
-		// accent + Ə˞ (capital rhotic)
-		{"grave+Ə˞", accentGrave, VK_R, true, "\u018F\u0300\u02DE"},
-		{"tilde+Ə˞", accentTilde, VK_R, true, "\u018F\u0303\u02DE"},
+		// accent + ə̱ (retracted)
+		{"grave+ə̱", accentGrave, VK_R, false, "\u0259\u0331\u0300"},
+		{"acute+ə̱", accentAcute, VK_R, false, "\u0259\u0331\u0301"},
+		{"tilde+ə̱", accentTilde, VK_R, false, "\u0259\u0331\u0303"},
+		{"macron+ə̱", accentMacron, VK_R, false, "\u0259\u0331\u0304"},
+		// accent + Ə̱ (capital retracted)
+		{"grave+Ə̱", accentGrave, VK_R, true, "\u018F\u0331\u0300"},
+		{"tilde+Ə̱", accentTilde, VK_R, true, "\u018F\u0331\u0303"},
+		// accent + o̱ (retracted o)
+		{"grave+o̱", accentGrave, VK_O, false, "o\u0331\u0300"},
+		{"acute+o̱", accentAcute, VK_O, false, "o\u0331\u0301"},
+		{"tilde+o̱", accentTilde, VK_O, false, "o\u0331\u0303"},
+		{"macron+o̱", accentMacron, VK_O, false, "o\u0331\u0304"},
+		// accent + u̱ (retracted u)
+		{"grave+u̱", accentGrave, VK_U, false, "u\u0331\u0300"},
+		{"acute+U̱", accentAcute, VK_U, true, "U\u0331\u0301"},
 	}
 	for _, tc := range tests {
 		got, ok := resolveDeadKey(tc.accent, tc.vk, true, tc.shift) // altGr=true
@@ -156,9 +168,9 @@ func TestResolveDeadKeyVowelWithAltGr(t *testing.T) {
 		want   string
 	}{
 		{"grave+a (AltGr held)", accentGrave, VK_A, false, "\u00E0"},
-		{"acute+o (AltGr held)", accentAcute, VK_O, false, "\u00F3"},
+		{"acute+o̱ (AltGr held)", accentAcute, VK_O, false, "o\u0331\u0301"},
 		{"tilde+i (AltGr held)", accentTilde, VK_I, false, "\u0129"},
-		{"macron+U (AltGr held)", accentMacron, VK_U, true, "\u016A"},
+		{"macron+U̱ (AltGr held)", accentMacron, VK_U, true, "U\u0331\u0304"},
 	}
 	for _, tc := range tests {
 		got, ok := resolveDeadKey(tc.accent, tc.vk, true, tc.shift) // altGr=true
@@ -191,8 +203,10 @@ func TestApplyAccent(t *testing.T) {
 		want   string
 	}{
 		{"grave on ə", accentGrave, "\u0259", "\u0259\u0300"},
-		{"tilde on ə˞", accentTilde, "\u0259\u02DE", "\u0259\u0303\u02DE"},
-		{"acute on Ə˞", accentAcute, "\u018F\u02DE", "\u018F\u0301\u02DE"},
+		{"tilde on ə̱", accentTilde, "\u0259\u0331", "\u0259\u0331\u0303"},
+		{"acute on Ə̱", accentAcute, "\u018F\u0331", "\u018F\u0331\u0301"},
+		{"grave on o̱", accentGrave, "o\u0331", "o\u0331\u0300"},
+		{"macron on u̱", accentMacron, "u\u0331", "u\u0331\u0304"},
 		{"macron on ə", accentMacron, "\u0259", "\u0259\u0304"},
 	}
 	for _, tc := range tests {
@@ -218,29 +232,29 @@ func TestAllMobileKeyboardSchwasCovered(t *testing.T) {
 		{"ə̀", "\u0259\u0300"},
 		{"ə́", "\u0259\u0301"},
 		{"ə̄", "\u0259\u0304"},
-		{"ə˞", "\u0259\u02DE"},
-		{"ə̃˞", "\u0259\u0303\u02DE"},
-		{"ə̀˞", "\u0259\u0300\u02DE"},
-		{"ə́˞", "\u0259\u0301\u02DE"},
-		{"ə̄˞", "\u0259\u0304\u02DE"},
+		{"ə̱", "\u0259\u0331"},
+		{"ə̱̃", "\u0259\u0331\u0303"},
+		{"ə̱̀", "\u0259\u0331\u0300"},
+		{"ə̱́", "\u0259\u0331\u0301"},
+		{"ə̱̄", "\u0259\u0331\u0304"},
 		// Uppercase
 		{"Ə", "\u018F"},
 		{"Ə̃", "\u018F\u0303"},
 		{"Ə̀", "\u018F\u0300"},
 		{"Ə́", "\u018F\u0301"},
 		{"Ə̄", "\u018F\u0304"},
-		{"Ə˞", "\u018F\u02DE"},
-		{"Ə̃˞", "\u018F\u0303\u02DE"},
-		{"Ə̀˞", "\u018F\u0300\u02DE"},
-		{"Ə́˞", "\u018F\u0301\u02DE"},
-		{"Ə̄˞", "\u018F\u0304\u02DE"},
+		{"Ə̱", "\u018F\u0331"},
+		{"Ə̱̃", "\u018F\u0331\u0303"},
+		{"Ə̱̀", "\u018F\u0331\u0300"},
+		{"Ə̱́", "\u018F\u0331\u0301"},
+		{"Ə̱̄", "\u018F\u0331\u0304"},
 	}
 
 	producible := make(map[string]bool)
 
-	// Direct: ə, Ə, ə˞, Ə˞
+	// Direct: ə, Ə, ə̱, Ə̱, o̱, O̱, u̱, U̱
 	for _, shift := range []bool{false, true} {
-		for _, vk := range []uint32{VK_E, VK_R} {
+		for _, vk := range []uint32{VK_E, VK_R, VK_O, VK_U} {
 			if s := lookupDirect(vk, shift); s != "" {
 				producible[s] = true
 			}
