@@ -198,7 +198,7 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 		// Dead key not resolved — cancel and process key normally (fall through)
 	}
 
-	// ── Direct AltGr mappings (ə, ə˞) ──
+	// ── Direct AltGr mappings (ə, ə̱, o̱, u̱) ──
 	if ag {
 		if output := lookupDirect(kb.VkCode, sh); output != "" {
 			blockedKeysMu.Lock()

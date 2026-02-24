@@ -15,8 +15,12 @@ DIRECT KEYS:
 
   Right Alt + E           ->  ə   (schwa)
   Right Alt + Shift + E   ->  Ə   (capital schwa)
-  Right Alt + R           ->  ə˞  (rhotic schwa)
-  Right Alt + Shift + R   ->  Ə˞  (capital rhotic schwa)
+  Right Alt + R           ->  ə̱   (retracted schwa)
+  Right Alt + Shift + R   ->  Ə̱   (capital retracted schwa)
+  Right Alt + O           ->  o̱   (retracted o)
+  Right Alt + Shift + O   ->  O̱   (capital retracted o)
+  Right Alt + U           ->  u̱   (retracted u)
+  Right Alt + Shift + U   ->  U̱   (capital retracted u)
 
 ACCENTED VOWELS (two-step: press the accent key, release, then
 press a vowel — a, e, i, o, or u):
@@ -33,6 +37,6 @@ ACCENTED SCHWAS (accent key, then Right Alt + E or R):
   Right Alt + ~  then Right Alt + E  ->  ə̃
   Right Alt + -  then Right Alt + E  ->  ə̄
 
-  Same with R for rhotic:  ə̀˞  ə́˞  ə̃˞  ə̄˞
+  Same with R for retracted schwa:  ə̱̀  ə̱́  ə̱̃  ə̱̄
 
 Hold Shift for uppercase variants.

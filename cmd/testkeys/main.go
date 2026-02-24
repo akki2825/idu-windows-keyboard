@@ -156,7 +156,9 @@ var pendingAccent rune = noAccent
 // Direct AltGr mappings: [0]=lowercase, [1]=uppercase
 var directAltGr = map[uint16][2]string{
 	keyE: {"\u0259", "\u018F"},             // ə, Ə
-	keyR: {"\u0259\u02DE", "\u018F\u02DE"}, // ə˞, Ə˞
+	keyR: {"\u0259\u0331", "\u018F\u0331"}, // ə̱, Ə̱
+	keyO: {"o\u0331", "O\u0331"},           // o̱, O̱
+	keyU: {"u\u0331", "U\u0331"},           // u̱, U̱
 }
 
 // Dead key triggers: AltGr+key → [0]=no shift, [1]=shift
@@ -569,7 +571,7 @@ func main() {
 			accent := pendingAccent
 			pendingAccent = noAccent
 
-			// Try AltGr+E (ə) or AltGr+R (ə˞)
+			// Try AltGr+E (ə), AltGr+R (ə̱), AltGr+O (o̱), AltGr+U (u̱)
 			if ag {
 				if m, ok := directAltGr[evCode]; ok {
 					base := m[0]
@@ -615,7 +617,7 @@ func main() {
 			fmt.Printf("  [dead key cancelled]\n")
 		}
 
-		// ── Direct AltGr mappings (ə, ə˞) ──
+		// ── Direct AltGr mappings (ə, ə̱, o̱, u̱) ──
 		if ag {
 			if m, ok := directAltGr[evCode]; ok {
 				output := m[0]

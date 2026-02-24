@@ -58,6 +58,8 @@ func main() {
 	}
 	logf("Single-instance mutex acquired")
 
+	ensureNotoSansInstalled()
+
 	// Initialize system tray.
 	logf("calling initTray...")
 	err := initTray()
