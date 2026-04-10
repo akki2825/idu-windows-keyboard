@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap rescap desktop">
+
+  <Identity
+    Name="IduMishmi.idu_keyboard"
+    Publisher="CN=535DAC24-2DE1-43E2-A363-896DE724EB02"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Idu Mishmi Keyboard</DisplayName>
+    <PublisherDisplayName>Idu Mishmi</PublisherDisplayName>
+    <Logo>assets\StoreLogo.png</Logo>
+    <Description>A keyboard for typing in the Idu Mishmi (Idu Azobra) script on Windows. Supports AltGr key combinations and dead key composition for accented characters.</Description>
+  </Properties>
+
+  <Dependencies>
+    <!-- MinVersion: Windows 10 2004 (broad compatibility) -->
+    <!-- MaxVersionTested: Windows 11 23H2 -->
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.19041.0"
+      MaxVersionTested="10.0.22631.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application
+      Id="IduMishmiKeyboard"
+      Executable="Idu Mishmi Keyboard.exe"
+      EntryPoint="Windows.FullTrustApplication">
+
+      <uap:VisualElements
+        DisplayName="Idu Mishmi Keyboard"
+        Description="Idu Mishmi keyboard for typing in the Idu Azobra script"
+        BackgroundColor="transparent"
+        Square150x150Logo="assets\Square150x150Logo.png"
+        Square44x44Logo="assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          Wide310x150Logo="assets\Wide310x150Logo.png"
+          Square71x71Logo="assets\Square71x71Logo.png" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <!-- Allow the app to start with Windows (optional, useful for keyboard apps) -->
+        <desktop:Extension Category="windows.startupTask"
+          Executable="Idu Mishmi Keyboard.exe"
+          EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask
+            TaskId="IduMishmiKeyboardStartup"
+            Enabled="false"
+            DisplayName="Idu Mishmi Keyboard" />
+        </desktop:Extension>
+      </Extensions>
+
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- Required for Desktop Bridge (Win32) apps to run with full trust -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+
+</Package>
