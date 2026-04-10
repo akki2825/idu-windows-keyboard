@@ -25,6 +25,7 @@ jobs:
           go build -ldflags="-H windowsgui -s -w" -o "Idu Mishmi Keyboard.exe" .
 
       - name: Build MSIX
+        shell: powershell
         run: .\packaging\build-msix.ps1
 
       - name: Upload MSIX artifact
