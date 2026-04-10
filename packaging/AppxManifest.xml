@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap desktop">
 
   <Identity
-    Name="IduMishmi.idu-keyboard"
+    Name="HindooMeme.IduMishmiKeyboard"
     Publisher="CN=535DAC24-2DE1-43E2-A363-896DE724EB02"
     Version="1.0.0.0"
     ProcessorArchitecture="x64" />
