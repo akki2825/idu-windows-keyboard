@@ -9,7 +9,7 @@
   <Identity
     Name="HindooMeme.IduMishmiKeyboard"
     Publisher="CN=535DAC24-2DE1-43E2-A363-896DE724EB02"
-    Version="1.0.0.0"
+    Version="1.0.1.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
@@ -21,11 +21,11 @@
 
   <Dependencies>
     <!-- MinVersion: Windows 10 2004 (broad compatibility) -->
-    <!-- MaxVersionTested: Windows 11 23H2 -->
+    <!-- MaxVersionTested: Windows 11 24H2 -->
     <TargetDeviceFamily
       Name="Windows.Desktop"
       MinVersion="10.0.19041.0"
-      MaxVersionTested="10.0.22631.0" />
+      MaxVersionTested="10.0.26100.0" />
   </Dependencies>
 
   <Resources>

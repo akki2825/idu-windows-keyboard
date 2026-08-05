@@ -38,8 +38,20 @@ var (
 	procGetCursorPos        = user32.NewProc("GetCursorPos")
 	procDestroyIcon         = user32.NewProc("DestroyIcon")
 	procCreateIconIndirect  = user32.NewProc("CreateIconIndirect")
-	procPostMessageW        = user32.NewProc("PostMessageW")
-	procGetKeyboardLayout   = user32.NewProc("GetKeyboardLayout")
+	procPostMessageW          = user32.NewProc("PostMessageW")
+	procGetKeyboardLayout     = user32.NewProc("GetKeyboardLayout")
+	procShowWindow                 = user32.NewProc("ShowWindow")
+	procSetWindowTextW             = user32.NewProc("SetWindowTextW")
+	procIsWindowVisible            = user32.NewProc("IsWindowVisible")
+	procSystemParametersInfoW      = user32.NewProc("SystemParametersInfoW")
+	procSendMessageW               = user32.NewProc("SendMessageW")
+	procMessageBoxW                = user32.NewProc("MessageBoxW")
+	procRegisterWindowMessageW     = user32.NewProc("RegisterWindowMessageW")
+	procBeginPaint                 = user32.NewProc("BeginPaint")
+	procEndPaint                   = user32.NewProc("EndPaint")
+	procGetClientRect              = user32.NewProc("GetClientRect")
+	procDrawTextW                  = user32.NewProc("DrawTextW")
+	procSetLayeredWindowAttributes = user32.NewProc("SetLayeredWindowAttributes")
 )
 
 // shell32 procs
@@ -51,7 +63,6 @@ var (
 var (
 	procGetModuleHandleW = kernel32.NewProc("GetModuleHandleW")
 	procCreateMutexW     = kernel32.NewProc("CreateMutexW")
-	procGetLastError     = kernel32.NewProc("GetLastError")
 )
 
 // gdi32 procs
@@ -66,6 +77,9 @@ var (
 	procGetDC                  = user32.NewProc("GetDC")
 	procReleaseDC              = user32.NewProc("ReleaseDC")
 	procCreateBitmap           = gdi32.NewProc("CreateBitmap")
+	procGetStockObject         = gdi32.NewProc("GetStockObject")
+	procSetBkMode              = gdi32.NewProc("SetBkMode")
+	procSetTextColor           = gdi32.NewProc("SetTextColor")
 )
 
 // KBDLLHOOKSTRUCT matches the Win32 KBDLLHOOKSTRUCT layout.
@@ -164,6 +178,16 @@ type MENUITEMINFOW struct {
 	HbmpItem      uintptr
 }
 
+// PAINTSTRUCT matches the Win32 PAINTSTRUCT structure.
+type PAINTSTRUCT struct {
+	HDC         uintptr
+	FErase      int32
+	RcPaint     RECT
+	FRestore    int32
+	FIncUpdate  int32
+	RgbReserved [32]byte
+}
+
 // ICONINFO matches the Win32 ICONINFO structure.
 type ICONINFO struct {
 	FIcon    int32
@@ -171,6 +195,14 @@ type ICONINFO struct {
 	YHotspot uint32
 	HbmMask  uintptr
 	HbmColor uintptr
+}
+
+// messageBox shows a message box with no owner window.
+func messageBox(text, caption string, flags uintptr) {
+	procMessageBoxW.Call(0,
+		uintptr(unsafe.Pointer(utf16Ptr(text))),
+		uintptr(unsafe.Pointer(utf16Ptr(caption))),
+		flags)
 }
 
 // utf16Ptr converts a Go string to a *uint16 pointer for Win32 APIs.

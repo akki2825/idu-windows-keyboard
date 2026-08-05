@@ -1,1 +1,12 @@
 nightshift.yaml
+Idu Mishmi Keyboard.exe
+*.syso
+*.msix
+app.zip
+go*.tar.gz
+testkeys
+screenshots/
+screenshots_annotated/
+store-screenshot*.png
+packaging/staging/
+*.log

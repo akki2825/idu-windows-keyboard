@@ -64,8 +64,9 @@ const (
 const (
 	WM_DESTROY   = 0x0002
 	WM_COMMAND   = 0x0111
-	WM_LBUTTONUP = 0x0202
-	WM_RBUTTONUP = 0x0205
+	WM_LBUTTONDOWN = 0x0201
+	WM_LBUTTONUP   = 0x0202
+	WM_RBUTTONUP   = 0x0205
 	WM_USER      = 0x0400
 	WM_TRAYICON  = WM_USER + 1
 )
@@ -89,9 +90,81 @@ const (
 	MIIM_TYPE       = 0x00000010
 )
 
+// Window styles
+const (
+	WS_POPUP   = 0x80000000
+	WS_CAPTION = 0x00C00000
+	WS_SYSMENU = 0x00080000
+	WS_CHILD   = 0x40000000
+	WS_VISIBLE = 0x10000000
+)
+
+// Extended window styles
+const (
+	WS_EX_TOPMOST      = 0x00000008
+	WS_EX_TRANSPARENT  = 0x00000020
+	WS_EX_TOOLWINDOW   = 0x00000080
+	WS_EX_LAYERED      = 0x00080000
+)
+
+// Control styles
+const (
+	SS_CENTER     = 0x00000001
+	BS_PUSHBUTTON = 0x00000000
+)
+
+// ShowWindow commands
+const (
+	SW_HIDE           = 0
+	SW_SHOWNOACTIVATE = 4
+	SW_SHOW           = 5
+)
+
+// Additional messages
+const (
+	WM_CLOSE   = 0x0010
+	WM_SETFONT = 0x0030
+)
+
+// SystemParametersInfo
+const (
+	SPI_GETWORKAREA = 0x0030
+)
+
+// Colors
+const (
+	COLOR_BTNFACE = 15
+)
+
+// Stock objects
+const (
+	DEFAULT_GUI_FONT = 17
+)
+
+// Drawing
+const (
+	BK_TRANSPARENT = 1 // SetBkMode
+	DT_CENTER      = 0x01
+	DT_VCENTER     = 0x04
+	DT_SINGLELINE  = 0x20
+	WM_PAINT       = 0x000F
+)
+
+// Layered window
+const (
+	LWA_ALPHA = 0x02
+)
+
 // Error constants
 const (
 	ERROR_ALREADY_EXISTS = 183
+)
+
+// MessageBox flags
+const (
+	MB_OK              = 0x00000000
+	MB_ICONERROR       = 0x00000010
+	MB_ICONINFORMATION = 0x00000040
 )
 
 // isIgnorableModifier returns true if the pressed key is a modifier key that

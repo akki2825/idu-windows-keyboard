@@ -4,7 +4,6 @@ package main
 
 import (
 	"sync"
-	"sync/atomic"
 	"syscall"
 	"unsafe"
 )
@@ -20,12 +19,7 @@ var (
 	// Track VK codes of keys we blocked on key-down, so we also suppress their key-up.
 	blockedKeys   = make(map[uint32]bool)
 	blockedKeysMu sync.Mutex
-
-	// Log only the first N key events to avoid huge log files.
-	keyLogCount atomic.Int32
 )
-
-const maxKeyLogs = 50
 
 // isActive returns the current enabled state.
 func isActive() bool {
@@ -34,12 +28,14 @@ func isActive() bool {
 	return active
 }
 
-// setActive sets the enabled state and updates the tray icon.
+// setActive sets the enabled state and updates the tray icon and popup.
 func setActive(state bool) {
 	activeMu.Lock()
 	active = state
 	activeMu.Unlock()
 	updateTrayIcon()
+	updateIndicator()
+	updatePopup()
 }
 
 // toggleActive flips the enabled state.
@@ -48,6 +44,8 @@ func toggleActive() {
 	active = !active
 	activeMu.Unlock()
 	updateTrayIcon()
+	updateIndicator()
+	updatePopup()
 }
 
 // installHook sets up the low-level keyboard hook.
@@ -56,7 +54,6 @@ func installHook() error {
 
 	// WH_KEYBOARD_LL requires the module handle of the executable on Windows 11.
 	hMod, _, _ := procGetModuleHandleW.Call(0)
-	logf("hModule=%d callback=%d", hMod, cb)
 
 	handle, _, err := procSetWindowsHookExW.Call(
 		WH_KEYBOARD_LL,
@@ -90,13 +87,6 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 
 	isDown := wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN
 
-	// Log first N key-down events so we know the hook is alive.
-	if isDown && keyLogCount.Load() < int32(maxKeyLogs) {
-		keyLogCount.Add(1)
-		logf("hook: vk=0x%X flags=0x%X injected=%v down=%v",
-			kb.VkCode, kb.Flags, kb.Flags&LLKHF_INJECTED != 0, isDown)
-	}
-
 	// Skip injected keys (our own SendInput output).
 	if kb.Flags&LLKHF_INJECTED != 0 {
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
@@ -114,7 +104,6 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 	// Handle toggle hotkey (Scroll Lock) on key-down only.
 	if isDown && kb.VkCode == VK_SCROLL {
 		toggleActive()
-		logf("toggled active=%v", isActive())
 		// Pass through so Scroll Lock LED still toggles.
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
 		return ret
@@ -176,7 +165,6 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 			blockedKeysMu.Lock()
 			blockedKeys[kb.VkCode] = true
 			blockedKeysMu.Unlock()
-			logf("dead key set: accent=U+%04X vk=0x%X", accent, kb.VkCode)
 			return 1 // Suppress the dead key itself
 		}
 	}
@@ -190,11 +178,9 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 			blockedKeysMu.Lock()
 			blockedKeys[kb.VkCode] = true
 			blockedKeysMu.Unlock()
-			logf("dead key resolved: accent=U+%04X vk=0x%X → %q", accent, kb.VkCode, output)
 			sendUnicodeString(output)
 			return 1
 		}
-		logf("dead key cancelled: accent=U+%04X vk=0x%X", accent, kb.VkCode)
 		// Dead key not resolved — cancel and process key normally (fall through)
 	}
 
@@ -204,7 +190,6 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 			blockedKeysMu.Lock()
 			blockedKeys[kb.VkCode] = true
 			blockedKeysMu.Unlock()
-			logf("direct AltGr: vk=0x%X shift=%v → %q", kb.VkCode, sh, output)
 			sendUnicodeString(output)
 			return 1
 		}

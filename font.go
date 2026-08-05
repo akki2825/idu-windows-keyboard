@@ -37,11 +37,10 @@ const (
 )
 
 // ensureNotoSansInstalled installs Noto Sans as a per-user font if not already present.
-// All errors are logged but non-fatal — font install failure never prevents the keyboard from working.
+// All errors are non-fatal — font install failure never prevents the keyboard from working.
 func ensureNotoSansInstalled() {
 	localAppData := os.Getenv("LOCALAPPDATA")
 	if localAppData == "" {
-		logf("font: LOCALAPPDATA not set, skipping font install")
 		return
 	}
 
@@ -49,21 +48,16 @@ func ensureNotoSansInstalled() {
 	fontPath := filepath.Join(fontDir, "NotoSans-Regular.ttf")
 
 	// Check if font file already exists.
-	if _, err := os.Stat(fontPath); err == nil {
-		logf("font: %s already exists, skipping write", fontPath)
-	} else {
+	if _, err := os.Stat(fontPath); err != nil {
 		// Create font directory if needed.
 		if err := os.MkdirAll(fontDir, 0755); err != nil {
-			logf("font: failed to create directory %s: %v", fontDir, err)
 			return
 		}
 
 		// Write embedded font to disk.
 		if err := os.WriteFile(fontPath, notoSansTTF, 0644); err != nil {
-			logf("font: failed to write %s: %v", fontPath, err)
 			return
 		}
-		logf("font: wrote %s (%d bytes)", fontPath, len(notoSansTTF))
 
 		// Register in HKCU fonts registry.
 		registerFontInRegistry(fontPath)
@@ -71,16 +65,10 @@ func ensureNotoSansInstalled() {
 
 	// Load font for current session.
 	fontPathPtr := utf16Ptr(fontPath)
-	ret, _, _ := procAddFontResourceW.Call(uintptr(unsafe.Pointer(fontPathPtr)))
-	if ret == 0 {
-		logf("font: AddFontResourceW failed")
-	} else {
-		logf("font: AddFontResourceW succeeded (added %d fonts)", ret)
-	}
+	procAddFontResourceW.Call(uintptr(unsafe.Pointer(fontPathPtr)))
 
 	// Notify other applications of the font change.
 	procPostMessageW.Call(HWND_BROADCAST, WM_FONTCHANGE, 0, 0)
-	logf("font: broadcast WM_FONTCHANGE")
 }
 
 // registerFontInRegistry adds the font to HKCU\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts.
@@ -95,7 +83,6 @@ func registerFontInRegistry(fontPath string) {
 		uintptr(unsafe.Pointer(&hKey)),
 	)
 	if ret != 0 {
-		logf("font: RegOpenKeyExW failed (error %d)", ret)
 		return
 	}
 	defer procRegCloseKey.Call(hKey)
@@ -104,7 +91,7 @@ func registerFontInRegistry(fontPath string) {
 	valueData, _ := syscall.UTF16FromString(fontPath)
 	dataSize := uint32(len(valueData) * 2) // UTF-16 byte count
 
-	ret, _, _ = procRegSetValueExW.Call(
+	procRegSetValueExW.Call(
 		hKey,
 		uintptr(unsafe.Pointer(valueName)),
 		0,
@@ -112,9 +99,4 @@ func registerFontInRegistry(fontPath string) {
 		uintptr(unsafe.Pointer(&valueData[0])),
 		uintptr(dataSize),
 	)
-	if ret != 0 {
-		logf("font: RegSetValueExW failed (error %d)", ret)
-		return
-	}
-	logf("font: registered in HKCU fonts registry")
 }

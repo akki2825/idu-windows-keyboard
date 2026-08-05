@@ -9,6 +9,7 @@ import (
 
 const (
 	trayUID        = 1
+	menuIDOpen     = 1000
 	menuIDEnable   = 1001
 	menuIDDisable  = 1002
 	menuIDExit     = 1003
@@ -19,6 +20,9 @@ var (
 	iconActive  uintptr
 	iconInactive uintptr
 	hInstance   uintptr
+
+	// Broadcast when the shell (re)starts; we re-add the tray icon then.
+	taskbarCreatedMsg uintptr
 )
 
 // createProgrammaticIcon creates a small colored square icon using GDI.
@@ -58,18 +62,25 @@ func createProgrammaticIcon(color uint32) uintptr {
 
 // trayWndProc handles messages for the hidden tray window.
 func trayWndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
+	if msg == taskbarCreatedMsg && msg != 0 {
+		addTrayIcon()
+		return 0
+	}
+
 	switch msg {
 	case WM_TRAYICON:
 		switch lParam {
 		case WM_RBUTTONUP:
 			showContextMenu(hwnd)
-		case WM_LBUTTONUP:
+		case WM_LBUTTONUP, WM_LBUTTONDOWN:
 			toggleActive()
 		}
 		return 0
 
 	case WM_COMMAND:
 		switch wParam & 0xFFFF {
+		case menuIDOpen:
+			toggleActive()
 		case menuIDEnable:
 			setActive(true)
 		case menuIDDisable:
@@ -93,18 +104,16 @@ func trayWndProc(hwnd, msg, wParam, lParam uintptr) uintptr {
 
 // initTray creates the hidden window, icons, and system tray icon.
 func initTray() error {
-	logf("  initTray: GetModuleHandleW...")
 	hInstance, _, _ = procGetModuleHandleW.Call(0)
-	logf("  initTray: hInstance=%d", hInstance)
+
+	taskbarCreatedMsg, _, _ = procRegisterWindowMessageW.Call(
+		uintptr(unsafe.Pointer(utf16Ptr("TaskbarCreated"))))
 
 	// Create icons: green = active (0x0000FF00 -> BGR green), gray = inactive
-	logf("  initTray: creating icons...")
 	iconActive = createProgrammaticIcon(0x0000AA00)  // Green
 	iconInactive = createProgrammaticIcon(0x00808080) // Gray
-	logf("  initTray: icons created (active=%d inactive=%d)", iconActive, iconInactive)
 
 	// Register window class
-	logf("  initTray: registering window class...")
 	className := utf16Ptr("IduMishmiKBTray")
 	wc := WNDCLASSEXW{
 		CbSize:        uint32(unsafe.Sizeof(WNDCLASSEXW{})),
@@ -112,29 +121,24 @@ func initTray() error {
 		HInstance:     hInstance,
 		LpszClassName: className,
 	}
-	atom, _, regErr := procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wc)))
-	logf("  initTray: RegisterClassExW atom=%d err=%v", atom, regErr)
+	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wc)))
 
-	// Create message-only window (HWND_MESSAGE = -3)
-	logf("  initTray: creating window...")
+	// Create a hidden window for tray icon messages.
 	hwnd, _, err := procCreateWindowExW.Call(
 		0,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(utf16Ptr("Idu Mishmi Keyboard"))),
 		0, 0, 0, 0, 0,
-		uintptr(0xFFFFFFFFFFFFFFFD), // HWND_MESSAGE
+		0, // NULL parent (regular hidden window, not HWND_MESSAGE)
 		0, hInstance, 0,
 	)
-	logf("  initTray: CreateWindowExW hwnd=%d err=%v", hwnd, err)
 	if hwnd == 0 {
 		return err
 	}
 	trayHWnd = hwnd
 
 	// Add tray icon
-	logf("  initTray: adding tray icon...")
 	addTrayIcon()
-	logf("  initTray: done")
 
 	return nil
 }
@@ -142,7 +146,10 @@ func initTray() error {
 // addTrayIcon adds the icon to the system notification area.
 func addTrayIcon() {
 	nid := newNotifyIconData()
-	procShellNotifyIconW.Call(NIM_ADD, uintptr(unsafe.Pointer(&nid)))
+	ok, _, err := procShellNotifyIconW.Call(NIM_ADD, uintptr(unsafe.Pointer(&nid)))
+	if ok == 0 {
+		logf("Shell_NotifyIcon NIM_ADD failed: %v", err)
+	}
 }
 
 // updateTrayIcon changes the tray icon to reflect the current state.

@@ -3,86 +3,82 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
 	"runtime"
+	"runtime/debug"
+	"syscall"
 	"unsafe"
 )
-
-// logFile is the debug log written next to the .exe.
-var logFile *os.File
-
-func initLog() {
-	exePath, _ := os.Executable()
-	logPath := filepath.Join(filepath.Dir(exePath), "idu-keyboard.log")
-	f, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		return
-	}
-	logFile = f
-}
-
-func logf(format string, args ...any) {
-	if logFile != nil {
-		fmt.Fprintf(logFile, format+"\n", args...)
-		logFile.Sync()
-	}
-}
 
 func main() {
 	// Pin to OS thread -- required for Windows message loop and hooks.
 	runtime.LockOSThread()
 
 	initLog()
-	logf("Idu Mishmi Keyboard starting")
+	logf("Idu Mishmi Keyboard starting, version 1.0.1")
 
-	// Catch panics so they go to the log file.
+	// Catch panics so they go to the log file and the user sees an error
+	// instead of a silent crash.
 	defer func() {
 		if r := recover(); r != nil {
-			logf("PANIC: %v", r)
+			logf("PANIC: %v\n%s", r, debug.Stack())
+			messageBox("Idu Mishmi Keyboard hit an internal error and will close.",
+				"Idu Mishmi Keyboard", MB_OK|MB_ICONERROR)
 		}
 	}()
 
-	// Single-instance check via named mutex.
-	mutexName := utf16Ptr("Global\\IduMishmiKeyboard")
-	handle, _, _ := procCreateMutexW.Call(0, 1, uintptr(unsafe.Pointer(mutexName)))
+	// Single-instance check via named mutex. Per-session (Local\) namespace:
+	// a keyboard hook is per-session anyway, and Global\ can fail with
+	// ACCESS_DENIED when the mutex exists under another security context.
+	mutexName := utf16Ptr("Local\\IduMishmiKeyboard")
+	handle, _, err := procCreateMutexW.Call(0, 1, uintptr(unsafe.Pointer(mutexName)))
+	if errno, ok := err.(syscall.Errno); ok && errno == ERROR_ALREADY_EXISTS {
+		logf("another instance is already running; exiting")
+		messageBox("Idu Mishmi Keyboard is already running.\nLook for its icon in the system tray.",
+			"Idu Mishmi Keyboard", MB_OK|MB_ICONINFORMATION)
+		return
+	}
 	if handle == 0 {
-		logf("FATAL: CreateMutexW returned 0")
-		os.Exit(1)
+		// Not fatal -- continue without single-instance protection.
+		logf("CreateMutexW failed (%v); continuing without single-instance check", err)
+	} else {
+		logf("single-instance mutex acquired")
 	}
-	lastErr, _, _ := procGetLastError.Call()
-	if lastErr == ERROR_ALREADY_EXISTS {
-		logf("Another instance already running, exiting")
-		os.Exit(0)
-	}
-	logf("Single-instance mutex acquired")
 
 	ensureNotoSansInstalled()
+	logf("font install step done")
 
-	// Initialize system tray.
-	logf("calling initTray...")
-	err := initTray()
-	logf("initTray returned: err=%v", err)
-	if err != nil {
-		logf("FATAL: initTray failed: %v", err)
-		os.Exit(1)
+	// Initialize system tray. Failure is not fatal: the keyboard still works,
+	// and the icon is re-added when the shell broadcasts TaskbarCreated.
+	if err := initTray(); err != nil {
+		logf("initTray failed: %v; continuing without tray", err)
+	} else {
+		logf("system tray initialized")
 	}
-	logf("System tray initialized")
 
-	// Install keyboard hook.
-	logf("calling installHook...")
-	err = installHook()
-	logf("installHook returned: err=%v", err)
-	if err != nil {
+	// Settings popup, shown once at launch so there is visible UI.
+	if err := initPopup(); err != nil {
+		logf("initPopup failed: %v", err)
+	} else {
+		showPopup()
+	}
+
+	// Floating indicator badge.
+	if err := initIndicator(); err != nil {
+		logf("initIndicator failed: %v", err)
+	}
+
+	// Install keyboard hook. This is the one genuinely fatal failure.
+	if err := installHook(); err != nil {
 		logf("FATAL: installHook failed: %v", err)
+		messageBox("Could not install the keyboard hook ("+err.Error()+").\nIdu Mishmi Keyboard will now close.",
+			"Idu Mishmi Keyboard", MB_OK|MB_ICONERROR)
 		removeTrayIcon()
-		os.Exit(1)
+		return
 	}
-	logf("Keyboard hook installed (handle=%d)", hookHandle)
+	logf("keyboard hook installed")
 	defer uninstallHook()
 
-	logf("Entering message loop")
+	logf("entering message loop")
 
 	// Run message loop.
 	var msg MSG
@@ -98,5 +94,5 @@ func main() {
 		procDispatchMessageW.Call(uintptr(unsafe.Pointer(&msg)))
 	}
 
-	logf("Message loop ended, shutting down")
+	logf("message loop ended, shutting down")
 }

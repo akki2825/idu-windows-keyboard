@@ -1,0 +1,365 @@
+Idu Mishmi Keyboard for Windows — Testing Guide
+=================================================
+
+BEFORE YOU START
+----------------
+1. Download "Idu Mishmi Keyboard.exe"
+2. Double-click to run it
+3. Look for a green square icon in the system tray (bottom-right
+   of your taskbar, near the clock)
+4. Open Notepad (or any app you can type in) to test
+
+
+====================================================================
+1. INSTALLATION & STARTUP
+====================================================================
+
+[ ] The .exe runs without needing administrator access
+[ ] The .exe runs without needing an internet connection
+
+====================================================================
+2. DIRECT KEYS: test each one in Notepad
+====================================================================
+
+Hold the RIGHT Alt key (AltGr) and press the letter:
+
+  Shortcut                     Expected Output
+  ---------                    ---------------
+[ ] Right Alt + E              ə   (schwa)
+[ ] Right Alt + Shift + E      Ə   (capital schwa)
+[ ] Right Alt + R              ə̱   (retracted schwa)
+[ ] Right Alt + Shift + R      Ə̱   (capital retracted schwa)
+[ ] Right Alt + O              o̱   (retracted o)
+[ ] Right Alt + Shift + O      O̱   (capital retracted o)
+[ ] Right Alt + U              u̱   (retracted u)
+[ ] Right Alt + Shift + U      U̱   (capital retracted u)
+
+Important checks:
+[ ] The LEFT Alt key does NOT trigger any special characters
+[ ] Pressing E, R, O, U without Right Alt types the normal letter
+
+
+====================================================================
+3. DEAD KEYS: Accented Vowels (two-step)
+====================================================================
+
+Step 1: Press and release the accent key (Right Alt + key).
+Step 2: Press a vowel (a, e, i, o, or u).
+
+Nothing should appear on screen after Step 1. The character appears
+only after Step 2.
+
+GRAVE ACCENT (Right Alt + ` , then vowel):
+
+[ ] then a  ->  à
+[ ] then e  ->  è
+[ ] then i  ->  ì
+[ ] then o  ->  ò
+[ ] then u  ->  ù
+
+ACUTE ACCENT (Right Alt + ' , then vowel):
+
+[ ] then a  ->  á
+[ ] then e  ->  é
+[ ] then i  ->  í
+[ ] then o  ->  ó
+[ ] then u  ->  ú
+
+TILDE / NASALIZATION (Right Alt + ~ , i.e. Right Alt + Shift + `, then vowel):
+
+[ ] then a  ->  ã
+[ ] then e  ->  ẽ
+[ ] then i  ->  ĩ
+[ ] then o  ->  õ
+[ ] then u  ->  ũ
+
+MACRON (Right Alt + - , then vowel):
+
+[ ] then a  ->  ā
+[ ] then e  ->  ē
+[ ] then i  ->  ī
+[ ] then o  ->  ō
+[ ] then u  ->  ū
+
+Uppercase — hold Shift when pressing the vowel in Step 2:
+
+[ ] Right Alt + `  then Shift + A  ->  À
+[ ] Right Alt + '  then Shift + E  ->  É
+[ ] Right Alt + ~  then Shift + I  ->  Ĩ
+[ ] Right Alt + -  then Shift + U  ->  Ū
+
+
+====================================================================
+4. DEAD KEYS: Accented Schwas (two-step)
+====================================================================
+
+Step 1: Press and release the accent key (Right Alt + key).
+Step 2: Press Right Alt + E (for schwa) or Right Alt + R
+        (for retracted schwa).
+
+ACCENT + SCHWA (Right Alt + accent, then Right Alt + E):
+
+[ ] Right Alt + `  then Right Alt + E  ->  ə̀
+[ ] Right Alt + '  then Right Alt + E  ->  ə́
+[ ] Right Alt + ~  then Right Alt + E  ->  ə̃
+[ ] Right Alt + -  then Right Alt + E  ->  ə̄
+
+ACCENT + CAPITAL SCHWA (Right Alt + accent, then Right Alt + Shift + E):
+
+[ ] Right Alt + `  then Right Alt + Shift + E  ->  Ə̀
+[ ] Right Alt + '  then Right Alt + Shift + E  ->  Ə́
+[ ] Right Alt + ~  then Right Alt + Shift + E  ->  Ə̃
+[ ] Right Alt + -  then Right Alt + Shift + E  ->  Ə̄
+
+ACCENT + RETRACTED SCHWA (Right Alt + accent, then Right Alt + R):
+
+[ ] Right Alt + `  then Right Alt + R  ->  ə̱̀
+[ ] Right Alt + '  then Right Alt + R  ->  ə̱́
+[ ] Right Alt + ~  then Right Alt + R  ->  ə̱̃
+[ ] Right Alt + -  then Right Alt + R  ->  ə̱̄
+
+ACCENT + CAPITAL RETRACTED SCHWA (Right Alt + accent, then Right Alt + Shift + R):
+
+[ ] Right Alt + `  then Right Alt + Shift + R  ->  Ə̱̀
+[ ] Right Alt + '  then Right Alt + Shift + R  ->  Ə̱́
+[ ] Right Alt + ~  then Right Alt + Shift + R  ->  Ə̱̃
+[ ] Right Alt + -  then Right Alt + Shift + R  ->  Ə̱̄
+
+
+====================================================================
+5. DEAD KEYS: Accented Retracted O and U (two-step)
+====================================================================
+
+ACCENT + RETRACTED O (Right Alt + accent, then Right Alt + O):
+
+[ ] Right Alt + `  then Right Alt + O  ->  ò̱
+[ ] Right Alt + '  then Right Alt + O  ->  ó̱
+[ ] Right Alt + ~  then Right Alt + O  ->  õ̱
+[ ] Right Alt + -  then Right Alt + O  ->  ō̱
+
+ACCENT + CAPITAL RETRACTED O (Right Alt + accent, then Right Alt + Shift + O):
+
+[ ] Right Alt + `  then Right Alt + Shift + O  ->  Ò̱
+[ ] Right Alt + '  then Right Alt + Shift + O  ->  Ó̱
+[ ] Right Alt + ~  then Right Alt + Shift + O  ->  Õ̱
+[ ] Right Alt + -  then Right Alt + Shift + O  ->  Ō̱
+
+ACCENT + RETRACTED U (Right Alt + accent, then Right Alt + U):
+
+[ ] Right Alt + `  then Right Alt + U  ->  ù̱
+[ ] Right Alt + '  then Right Alt + U  ->  ú̱
+[ ] Right Alt + ~  then Right Alt + U  ->  ũ̱
+[ ] Right Alt + -  then Right Alt + U  ->  ū̱
+
+ACCENT + CAPITAL RETRACTED U (Right Alt + accent, then Right Alt + Shift + U):
+
+[ ] Right Alt + `  then Right Alt + Shift + U  ->  Ù̱
+[ ] Right Alt + '  then Right Alt + Shift + U  ->  Ú̱
+[ ] Right Alt + ~  then Right Alt + Shift + U  ->  Ũ̱
+[ ] Right Alt + -  then Right Alt + Shift + U  ->  Ū̱
+
+
+====================================================================
+6. DEAD KEY CANCELLATION
+====================================================================
+
+If you press an accent key and then press a non-vowel, the dead key
+should cancel and the non-vowel should type normally.
+
+[ ] Right Alt + `  then press T  ->  t  (no accent, no extra character)
+[ ] Right Alt + '  then press S  ->  s
+[ ] Right Alt + ~  then press B  ->  b
+[ ] Right Alt + -  then press 5  ->  5
+
+
+====================================================================
+7. CAPS LOCK SUPPORT
+====================================================================
+
+Turn ON Caps Lock, then test:
+
+[ ] Right Alt + E              ->  Ə   (capital schwa)
+[ ] Right Alt + Shift + E      ->  ə   (lowercase — Shift inverts Caps Lock)
+[ ] Right Alt + R              ->  Ə̱   (capital retracted schwa)
+[ ] Right Alt + `  then A      ->  À   (capital grave A)
+[ ] Right Alt + '  then Shift + A  ->  á  (Shift inverts back to lowercase)
+
+Turn OFF Caps Lock when done.
+
+
+====================================================================
+8. NORMAL TYPING IS NOT AFFECTED
+====================================================================
+
+With the keyboard active, verify these all work normally:
+
+[ ] All letter keys (a-z) type normally without Right Alt held
+[ ] Number keys (0-9) type normally
+[ ] Punctuation keys (. , ; ' ` - etc.) type normally
+[ ] Spacebar, Enter, Tab, Backspace, Delete all work normally
+
+====================================================================
+9. TEST IN DIFFERENT APPLICATIONS
+====================================================================
+
+Try typing Idu Mishmi characters in each of these apps:
+
+[ ] Notepad
+[ ] Microsoft Word
+[ ] Google Chrome (in a text field, e.g., Google search bar)
+[ ] WhatsApp Desktop
+[ ] Facebook Messenger (in browser)
+[ ] Any other app you frequently use
+
+For each app, try at least:
+  - Right Alt + E  (should produce ə)
+  - Right Alt + `  then a  (should produce à)
+  - Right Alt + R  (should produce ə̱)
+
+
+====================================================================
+10. TYPING SPEED & REPEATED KEYS
+====================================================================
+
+[ ] Type rapidly: Right Alt + E, Right Alt + E, Right Alt + E
+    -> should produce ə ə ə (three schwas)
+[ ] Type a sentence mixing normal and special characters quickly
+    -> e.g., "əma ə̱kra ārõ" — characters should not get swapped
+       or dropped
+[ ] Hold Right Alt + E (key repeat): should produce multiple ə
+
+
+====================================================================
+11. EDGE CASES
+====================================================================
+
+[ ] Press Right Alt + E while already typing fast in English
+    -> only ə should appear, no extra characters
+[ ] Press a dead key (Right Alt + `) and then wait 10 seconds
+    before pressing a vowel — accent should still apply
+[ ] Press a dead key, then click a different window, then press
+    a vowel — check behavior (accent may cancel, which is OK)
+[ ] Press Right Alt + a key that has no mapping (e.g., Right Alt + Z)
+    -> nothing should happen, or the normal key should pass through
+[ ] Use the keyboard right after waking the computer from sleep
+    -> should still work without restarting the program
+
+
+====================================================================
+12. FONT SIZES & DISPLAY
+====================================================================
+
+Test that Idu Mishmi characters display correctly at different sizes.
+Open Microsoft Word (or any app that lets you change font size) and
+type this sample text:  ə ə̱ Ə̱ o̱ ā ə̀ ə̱́ ũ
+
+SMALL SIZES:
+[ ] Font size 8pt : characters are readable, accents visible
+[ ] Font size 10pt : characters are readable, accents visible
+[ ] Font size 12pt : characters are readable, accents visible
+
+MEDIUM SIZES:
+[ ] Font size 16pt : no clipping or overlap of accents
+[ ] Font size 20pt : no clipping or overlap of accents
+[ ] Font size 24pt : no clipping or overlap of accents
+
+LARGE SIZES:
+[ ] Font size 36pt : characters render cleanly
+[ ] Font size 48pt : characters render cleanly
+[ ] Font size 72pt : characters render cleanly
+
+Check these for each size:
+[ ] The combining macron below (  ̱ ) on ə̱, o̱, u̱ does not overlap
+    with the letter or cut off at the bottom
+[ ] Accents on schwas (ə̀ ə́ ə̃ ə̄) sit correctly above the letter
+[ ] Stacked marks on retracted schwas (ə̱̀ ə̱́ ə̱̃ ə̱̄) are both
+    visible : macron below AND accent above
+[ ] Capital variants (Ə, Ə̱, O̱, U̱) are clearly distinguishable
+    from lowercase
+
+====================================================================
+13. PRINTING
+====================================================================
+
+Type a paragraph of Idu Mishmi text using mixed characters, e.g.:
+  "ə əma ārõ ə̱kra Ə̱ o̱ u̱ àèìòù áéíóú ãẽĩõũ āēīōū ə̀ə́ə̃ə̄ ə̱̀ə̱́ə̱̃ə̱̄"
+
+PRINT PREVIEW:
+[ ] Open Print Preview (Ctrl + P) in Notepad or Word
+[ ] All special characters appear correctly in the preview
+[ ] No characters are replaced by boxes, question marks, or blanks
+[ ] Accents and combining marks are positioned correctly
+
+PRINT TO PDF:
+[ ] Print using "Microsoft Print to PDF"
+[ ] Open the PDF and verify all characters display correctly
+[ ] Zoom in on the PDF — accents and combining marks are clean
+
+PRINT TO PAPER (if you have a printer):
+[ ] Print on paper
+[ ] All special characters are legible on the printout
+[ ] Accents and retracted marks are not cut off or missing
+
+COPY-PASTE AFTER PRINT:
+[ ] From the PDF, select and copy the Idu Mishmi text
+[ ] Paste into Notepad — characters should be preserved correctly
+
+
+====================================================================
+14. COPY, PASTE & TEXT OPERATIONS
+====================================================================
+
+Type some Idu Mishmi text:  ə ə̱ o̱ ārõ ə̱̀
+
+[ ] Select all (Ctrl + A) and copy (Ctrl + C)
+[ ] Paste (Ctrl + V) into the same app — text is identical
+[ ] Paste into a DIFFERENT app (e.g., type in Word, paste into
+    Chrome) — text is preserved
+[ ] Cut (Ctrl + X) and paste — text is preserved
+[ ] Undo (Ctrl + Z) after typing a special character — the
+    character is removed cleanly (not partially)
+
+FIND & REPLACE:
+[ ] In Notepad or Word, use Find (Ctrl + F) to search for ə
+    -> it should find all schwa characters
+[ ] Search for ə̱ (retracted schwa) — only retracted schwas found,
+    not plain schwas
+[ ] Use Replace to replace ə with ə̱ — replacement works correctly
+
+
+====================================================================
+15. TEXT SELECTION & CURSOR BEHAVIOR
+====================================================================
+
+Type:  aəbə̱co̱d
+
+[ ] Click between each character — the cursor lands at the correct
+    position (not in the middle of a combining sequence)
+[ ] Use arrow keys (Left/Right) to move through the text — the
+    cursor moves one visible character at a time
+[ ] Double-click on ə̱ — selects the whole character (base + mark),
+    not just part of it
+[ ] Shift + arrow keys to select text — selection includes full
+    combining sequences
+[ ] Backspace after ə̱ — deletes the whole character cleanly
+    (note: some apps delete one codepoint at a time, which is OK
+     but worth noting)
+
+
+====================================================================
+16. SAVING & REOPENING FILES
+====================================================================
+
+Type Idu Mishmi text and save the file:
+
+NOTEPAD:
+[ ] Save as .txt (UTF-8) — reopen, characters are preserved
+
+MICROSOFT WORD:
+[ ] Save as .docx — reopen, characters are preserved
+[ ] Save as .pdf (Export) — open PDF, characters are correct
+
+WEB BROWSER:
+[ ] Type Idu Mishmi characters in a web form and submit
+[ ] Check that the submitted text displays correctly on the page
+

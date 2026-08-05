@@ -19,14 +19,92 @@ jobs:
       - name: Install go-winres
         run: go install github.com/tc-hib/go-winres@latest
 
+      - name: Vet and test
+        run: |
+          go vet .
+          go test -v .
+
       - name: Build exe
         run: |
           go-winres make
           go build -ldflags="-H windowsgui -s -w" -o "Idu Mishmi Keyboard.exe" .
 
+      - name: Smoke test (unpackaged)
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $exe = Join-Path $PWD "Idu Mishmi Keyboard.exe"
+          $logPath = Join-Path $env:LOCALAPPDATA "IduMishmiKeyboard\idu-keyboard.log"
+
+          $p1 = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 15
+          if ($p1.HasExited) {
+            if (Test-Path $logPath) { Get-Content $logPath }
+            throw "First instance exited within 15s (exit code $($p1.ExitCode))"
+          }
+          Write-Host "First instance alive (pid $($p1.Id))"
+
+          if (-not (Test-Path $logPath)) { throw "Log file not created: $logPath" }
+          $log = Get-Content $logPath -Raw
+          Write-Host "---- log ----"
+          Write-Host $log
+          Write-Host "-------------"
+          if ($log -match "PANIC|FATAL") { throw "Log contains PANIC/FATAL" }
+          if ($log -notmatch "entering message loop") { throw "Log missing 'entering message loop'" }
+
+          # Second instance must detect the first and not kill it.
+          $p2 = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 5
+          if ($p1.HasExited) { throw "First instance died when second was launched" }
+          $log = Get-Content $logPath -Raw
+          if ($log -notmatch "another instance is already running") {
+            throw "Second instance did not log single-instance detection"
+          }
+          Write-Host "Second-instance behavior OK"
+
+          Stop-Process -Name "Idu Mishmi Keyboard" -Force -ErrorAction SilentlyContinue
+          Remove-Item $logPath -Force -ErrorAction SilentlyContinue
+
       - name: Build MSIX
         shell: powershell
         run: .\packaging\build-msix.ps1
+
+      - name: MSIX install test
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          # Self-sign with a subject matching the manifest Publisher.
+          $cert = New-SelfSignedCertificate -Type Custom `
+            -Subject "CN=535DAC24-2DE1-43E2-A363-896DE724EB02" `
+            -KeyUsage DigitalSignature -FriendlyName "IduMishmi CI" `
+            -CertStoreLocation "Cert:\LocalMachine\My" `
+            -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
+          $pfx = Join-Path $env:TEMP "ci.cer"
+          Export-Certificate -Cert $cert -FilePath $pfx | Out-Null
+          Import-Certificate -FilePath $pfx -CertStoreLocation "Cert:\LocalMachine\TrustedPeople" | Out-Null
+
+          $signtool = Get-Item "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+            Sort-Object -Descending | Select-Object -First 1
+          & $signtool.FullName sign /fd SHA256 /sha1 $cert.Thumbprint /td SHA256 IduMishmiKeyboard.msix
+          if ($LASTEXITCODE -ne 0) { throw "signtool failed" }
+
+          Add-AppxPackage -Path .\IduMishmiKeyboard.msix
+          $pkg = Get-AppxPackage HindooMeme.IduMishmiKeyboard
+          Start-Process explorer.exe "shell:AppsFolder\$($pkg.PackageFamilyName)!IduMishmiKeyboard"
+          Start-Sleep -Seconds 15
+
+          $proc = Get-Process "Idu Mishmi Keyboard" -ErrorAction SilentlyContinue
+          $logs = @(
+            (Join-Path $env:LOCALAPPDATA "Packages\$($pkg.PackageFamilyName)\LocalCache\Local\IduMishmiKeyboard\idu-keyboard.log"),
+            (Join-Path $env:LOCALAPPDATA "IduMishmiKeyboard\idu-keyboard.log")
+          )
+          foreach ($lp in $logs) {
+            if (Test-Path $lp) { Write-Host "---- $lp ----"; Get-Content $lp }
+          }
+          if (-not $proc) { throw "Packaged app not running 15s after launch" }
+          Write-Host "Packaged app alive (pid $($proc.Id))"
+          Stop-Process -Name "Idu Mishmi Keyboard" -Force -ErrorAction SilentlyContinue
 
       - name: Upload MSIX artifact
         uses: actions/upload-artifact@v4
