@@ -84,12 +84,14 @@ jobs:
           Export-Certificate -Cert $cert -FilePath $pfx | Out-Null
           Import-Certificate -FilePath $pfx -CertStoreLocation "Cert:\LocalMachine\TrustedPeople" | Out-Null
 
+          # Sign a copy so the uploaded artifact stays unsigned (Store re-signs it).
+          Copy-Item IduMishmiKeyboard.msix IduMishmiKeyboard-signed.msix
           $signtool = Get-Item "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
             Sort-Object -Descending | Select-Object -First 1
-          & $signtool.FullName sign /fd SHA256 /sha1 $cert.Thumbprint /td SHA256 IduMishmiKeyboard.msix
+          & $signtool.FullName sign /fd SHA256 /sha1 $cert.Thumbprint /td SHA256 IduMishmiKeyboard-signed.msix
           if ($LASTEXITCODE -ne 0) { throw "signtool failed" }
 
-          Add-AppxPackage -Path .\IduMishmiKeyboard.msix
+          Add-AppxPackage -Path .\IduMishmiKeyboard-signed.msix
           $pkg = Get-AppxPackage HindooMeme.IduMishmiKeyboard
           Start-Process explorer.exe "shell:AppsFolder\$($pkg.PackageFamilyName)!IduMishmiKeyboard"
           Start-Sleep -Seconds 15
