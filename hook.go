@@ -89,6 +89,9 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 
 	// Skip injected keys (our own SendInput output).
 	if kb.Flags&LLKHF_INJECTED != 0 {
+		if isDown {
+			logf("hook: injected event vk=0x%X scan=0x%X", kb.VkCode, kb.ScanCode)
+		}
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
 		return ret
 	}
@@ -97,6 +100,9 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 
 	// Always pass through modifier keys.
 	if isIgnorableModifier(kb.VkCode) {
+		if isDown {
+			logf("hook: modifier down vk=0x%X", kb.VkCode)
+		}
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
 		return ret
 	}
@@ -104,6 +110,7 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 	// Handle toggle hotkey (Scroll Lock) on key-down only.
 	if isDown && kb.VkCode == VK_SCROLL {
 		toggleActive()
+		logf("hook: scroll lock toggle, active now %v", isActive())
 		// Pass through so Scroll Lock LED still toggles.
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
 		return ret
@@ -129,6 +136,9 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 		ret, _, _ := procCallNextHookEx.Call(0, uintptr(nCode), wParam, lParam)
 		return ret
 	}
+
+	logf("hook: keydown vk=0x%X active=%v ctrlOnly=%v lalt=%v win=%v altgr=%v shift=%v",
+		kb.VkCode, isActive(), isOnlyCtrl(), isLeftAltDown(), isWinKeyDown(), isAltGr(), isLogicalShift())
 
 	// If not active, pass everything through.
 	if !isActive() {
@@ -178,6 +188,7 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 			blockedKeysMu.Lock()
 			blockedKeys[kb.VkCode] = true
 			blockedKeysMu.Unlock()
+			logf("hook: dead key resolved -> %q", output)
 			sendUnicodeString(output)
 			return 1
 		}
@@ -190,6 +201,7 @@ func hookCallback(nCode int, wParam uintptr, lParam uintptr) uintptr {
 			blockedKeysMu.Lock()
 			blockedKeys[kb.VkCode] = true
 			blockedKeysMu.Unlock()
+			logf("hook: direct map vk=0x%X -> %q", kb.VkCode, output)
 			sendUnicodeString(output)
 			return 1
 		}

@@ -34,9 +34,10 @@ func sendUnicodeString(s string) {
 		})
 	}
 
-	procSendInput.Call(
+	n, _, err := procSendInput.Call(
 		uintptr(len(inputs)),
 		uintptr(unsafe.Pointer(&inputs[0])),
 		uintptr(sizeofInput()),
 	)
+	logf("sendinput: injected %d/%d events (err=%v)", n, len(inputs), err)
 }
