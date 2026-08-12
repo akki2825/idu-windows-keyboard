@@ -34,7 +34,25 @@ func sendUnicodeString(s string) {
 		}
 	}
 
-	inputs := make([]INPUT, 0, len(held)*2+len(runes)*2+2)
+	altHeld := false
+	for _, m := range held {
+		if m.vk == VK_LMENU || m.vk == VK_RMENU {
+			altHeld = true
+		}
+	}
+	ctrlTap := []INPUT{
+		{Type: INPUT_KEYBOARD, Ki: KEYBDINPUT{WVk: VK_LCONTROL}},
+		{Type: INPUT_KEYBOARD, Ki: KEYBDINPUT{WVk: VK_LCONTROL, DwFlags: KEYEVENTF_KEYUP}},
+	}
+
+	inputs := make([]INPUT, 0, len(held)*2+len(runes)*2+4)
+
+	// Mask the upcoming Alt release: without a key event between the physical
+	// Alt-down and the injected Alt-up, the target treats it as a bare Alt tap
+	// and moves focus to its menu bar, swallowing the first character.
+	if altHeld {
+		inputs = append(inputs, ctrlTap...)
+	}
 
 	// Release held modifiers so the characters arrive as plain text.
 	for _, m := range held {
@@ -64,22 +82,15 @@ func sendUnicodeString(s string) {
 	}
 
 	// Re-press the released modifiers so their physical state stays consistent.
-	altRestored := false
 	for _, m := range held {
-		if m.vk == VK_LMENU || m.vk == VK_RMENU {
-			altRestored = true
-		}
 		inputs = append(inputs, INPUT{
 			Type: INPUT_KEYBOARD,
 			Ki:   KEYBDINPUT{WVk: m.vk, DwFlags: m.extended},
 		})
 	}
-	if altRestored {
+	if altHeld {
 		// Ctrl tap so the later physical Alt key-up isn't a bare Alt tap.
-		inputs = append(inputs,
-			INPUT{Type: INPUT_KEYBOARD, Ki: KEYBDINPUT{WVk: VK_LCONTROL}},
-			INPUT{Type: INPUT_KEYBOARD, Ki: KEYBDINPUT{WVk: VK_LCONTROL, DwFlags: KEYEVENTF_KEYUP}},
-		)
+		inputs = append(inputs, ctrlTap...)
 	}
 
 	logf("sendinput: %d modifiers released around injection", len(held))
