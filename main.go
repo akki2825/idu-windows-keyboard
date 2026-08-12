@@ -14,7 +14,7 @@ func main() {
 	runtime.LockOSThread()
 
 	initLog()
-	logf("Idu Mishmi Keyboard starting, version 1.0.1")
+	logf("Idu Mishmi Keyboard starting, version 1.0.2")
 
 	// Catch panics so they go to the log file and the user sees an error
 	// instead of a silent crash.
